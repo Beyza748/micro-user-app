@@ -1,25 +1,23 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, request
 import requests
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    country = None
+    holidays = []
 
-@app.route("/api/countries")
-def countries():
-    return jsonify(
-        requests.get("http://country-service:5001/countries").json()
-    )
+    if request.method == "POST":
+        code = request.form["country"]
 
-@app.route("/api/holidays")
-def holidays():
-    code = request.args.get("code")
-    return jsonify(
-        requests.get(
-            f"http://holiday-service:5002/holidays?code={code}"
-        ).json()
-    )
+        country_res = requests.get(f"http://country-service:5001/{code}").json()
+        holiday_res = requests.get(f"http://holiday-service:5002/{code}").json()
 
-app.run(host="0.0.0.0", port=5000)
+        country = country_res["name"]
+        holidays = holiday_res["holidays"]
+
+    return render_template("index.html", country=country, holidays=holidays)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
