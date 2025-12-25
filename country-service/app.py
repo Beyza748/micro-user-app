@@ -6,6 +6,7 @@ app = Flask(__name__)
 @app.route("/countries")
 def countries():
     data = requests.get("https://restcountries.com/v3.1/all").json()
+
     result = []
     for c in data[:20]:
         result.append({
@@ -15,6 +16,8 @@ def countries():
             "population": c["population"],
             "flag": c["flags"]["png"]
         })
+
     return jsonify(result)
 
-app.run(host="0.0.0.0", port=5001)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5001)
