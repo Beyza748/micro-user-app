@@ -1,0 +1,18 @@
+services:
+  country-service:
+    build: ./country-service
+    expose:
+      - "5001"
+
+  holiday-service:
+    build: ./holiday-service
+    expose:
+      - "5002"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - country-service
+      - holiday-service
